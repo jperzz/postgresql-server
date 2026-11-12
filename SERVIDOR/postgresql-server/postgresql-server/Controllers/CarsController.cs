@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using postgresql_server.DataBase;
+using postgresql_server.DataBase.Entities;
 
 namespace PostgreSqlServer.Controllers
 {
@@ -18,13 +19,28 @@ namespace PostgreSqlServer.Controllers
         [HttpGet]
         public IEnumerable<Car> GetAllCars()
         {
-            return _dataBase.GetAll();
+            return _dataBase.Cars;
+        }
+
+        [HttpGet("byname/{name}")]
+
+        public IEnumerable<Car> GetAllCarsByName(string name)
+        {
+            retunr _dataBase.Cars.Where(Car => Car.Name.ToLower().Contains(name.ToLower()));
+        }
+
+        [HttpGet("{id}")]
+
+        public Car? GetCar(int id)
+        {
+            retunr _dataBase.Cars.Find(id);
         }
 
         [HttpPost]
         public ActionResult<Car> AddCar([FromBody] Car newCar)
         {
-            _dataBase.Add(newCar);
+            _dataBase.Cars.Add(newCar);
+            _dataBase.SaveChanges();
 
             return Created($"cars/{newCar.Id}", newCar);
         }
